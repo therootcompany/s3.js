@@ -1,0 +1,33 @@
+{
+    "name": "@root/s3",
+    "version": "1.0.0",
+    "description": "A simple, lightweight s3 client with only 2 dependencies",
+    "main": "index.js",
+    "files": [
+        "lib"
+    ],
+    "directories": {
+        "example": "examples"
+    },
+    "scripts": {
+        "test": "node test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://git.rootprojects.org/root/s3.js.git"
+    },
+    "keywords": [
+        "s3",
+        "lightweight",
+        "alternative"
+    ],
+    "author": "AJ ONeal <coolaj86@gmail.com> (https://coolaj86.com/)",
+    "license": "(MIT OR Apache-2.0)",
+    "dependencies": {
+        "@root/request": "^1.5.0",
+        "aws4": "^1.9.1"
+    },
+    "devDependencies": {
+        "dotenv": "^8.2.0"
+    }
+}
