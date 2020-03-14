@@ -7,6 +7,7 @@ var env = process.env;
 module.exports = {
     // HEAD
     head: function({
+        host,
         accessKeyId,
         secretAccessKey,
         region,
@@ -44,19 +45,20 @@ module.exports = {
         }
         var signed = aws4.sign(
             {
-                // host: awsHost
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
-                path: '/' + bucket + '/' + prefix + key,
+                path: (host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'HEAD',
                 signQuery: true
             },
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
-        var url = 'https://' + signed.hostname + signed.path;
+        var url = 'https://' + signed.host + signed.path;
 
         return request({ method: 'HEAD', url }).then(function(resp) {
             if (200 === resp.statusCode) {
+                resp.url = url;
                 return resp;
             }
             var err = new Error(
@@ -72,6 +74,7 @@ module.exports = {
 
     // GET
     get: function({
+        host,
         accessKeyId,
         secretAccessKey,
         region,
@@ -86,40 +89,46 @@ module.exports = {
         }
         var signed = aws4.sign(
             {
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
-                path: '/' + bucket + '/' + prefix + key,
+                path: (host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'GET',
                 signQuery: true
             },
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
-        var url = 'https://' + signed.hostname + signed.path;
+        var url = 'https://' + signed.host + signed.path;
 
         // stay binary by default
         var encoding = null;
         if (json) {
             encoding = undefined;
         }
-        return request({ method: 'GET', url, encoding: null, json: json }).then(
-            function(resp) {
-                if (200 === resp.statusCode) {
-                    return resp;
-                }
-                var err = new Error(
-                    'expected status 200 but got ' +
-                        resp.statusCode +
-                        '. See err.response for more info.'
-                );
-                err.url = url;
-                err.response = resp;
-                throw err;
+        return request({
+            method: 'GET',
+            url,
+            encoding: encoding,
+            json: json
+        }).then(function(resp) {
+            if (200 === resp.statusCode) {
+                resp.url = url;
+                return resp;
             }
-        );
+            var err = new Error(
+                'expected status 200 but got ' +
+                    resp.statusCode +
+                    '. See err.response for more info.'
+            );
+            err.url = url;
+            err.response = resp;
+            throw err;
+        });
     },
 
     // PUT
     set: function({
+        host,
         accessKeyId,
         secretAccessKey,
         region,
@@ -135,15 +144,16 @@ module.exports = {
         }
         var signed = aws4.sign(
             {
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
-                path: '/' + bucket + '/' + prefix + key,
+                path: (host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'PUT',
                 signQuery: true
             },
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
-        var url = 'https://' + signed.hostname + signed.path;
+        var url = 'https://' + signed.host + signed.path;
         var headers = {};
         if ('undefined' !== typeof size) {
             headers['Content-Length'] = size;
@@ -153,6 +163,7 @@ module.exports = {
             resp
         ) {
             if (200 === resp.statusCode) {
+                resp.url = url;
                 return resp;
             }
             var err = new Error(
@@ -168,6 +179,7 @@ module.exports = {
 
     // DELETE
     del: function({
+        host,
         accessKeyId,
         secretAccessKey,
         region,
@@ -181,18 +193,20 @@ module.exports = {
         }
         var signed = aws4.sign(
             {
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
-                path: '/' + bucket + '/' + prefix + key,
+                path: (host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'DELETE',
                 signQuery: true
             },
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
-        var url = 'https://' + signed.hostname + signed.path;
+        var url = 'https://' + signed.host + signed.path;
 
         return request({ method: 'DELETE', url }).then(function(resp) {
             if (204 === resp.statusCode) {
+                resp.url = url;
                 return resp;
             }
             var err = new Error(
