@@ -3,6 +3,9 @@
     "version": "1.0.3",
     "description": "A simple, lightweight s3 client with only 2 dependencies",
     "main": "index.js",
+    "bin": {
+        "s3-download": "bin/s3-download.js"
+    },
     "files": [
         "lib"
     ],
