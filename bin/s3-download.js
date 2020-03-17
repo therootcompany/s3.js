@@ -4,7 +4,7 @@ require('dotenv').config();
 var env = process.env;
 var s3 = require('../index.js');
 
-var accessKeyId = env.AWS_ACCESS_KEY;
+var accessKeyId = env.AWS_ACCESS_KEY || env.AWS_ACCESS_KEY_ID;
 var secretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 var region = env.AWS_REGION;
 var bucket = env.AWS_BUCKET;
@@ -36,11 +36,12 @@ async function run() {
         })
         .catch(function(err) {
             console.error('Error:');
-            console.error('GET Response:');
             if (err.response) {
+                console.error(err.url);
+                console.error('GET Response:');
                 console.error(err.response.statusCode);
                 console.error(err.response.headers);
-                console.error(err.url);
+                console.error(err.response.body.toString('utf8'));
             } else {
                 console.error(err);
             }

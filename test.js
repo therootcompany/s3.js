@@ -4,7 +4,7 @@ require('dotenv').config();
 var env = process.env;
 var s3 = require('./index.js');
 
-var accessKeyId = env.AWS_ACCESS_KEY;
+var accessKeyId = env.AWS_ACCESS_KEY || env.AWS_ACCESS_KEY_ID;
 var secretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 var region = env.AWS_REGION;
 var bucket = env.AWS_BUCKET;

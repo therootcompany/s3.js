@@ -17,6 +17,14 @@ s3.set({
     bucket,
     prefix,
     key,
-    body
+    body,
+    size
 })
+```
+
+If the body is a stream then `size` must be set to `fs.statSync(filePath).size`, or the request will fail:
+
+```
+501
+<Code>NotImplemented</Code><Message>A header you provided implies functionality that is not implemented</Message>
 ```

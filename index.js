@@ -28,8 +28,8 @@ module.exports = {
         }
         */
         /*
-        if (env.AWS_ACCESS_KEY) {
-            accessKeyId = accessKeyId || env.AWS_ACCESS_KEY;
+        if (env.AWS_ACCESS_KEY || env.AWS_ACCESS_KEY_ID) {
+            accessKeyId = accessKeyId || env.AWS_ACCESS_KEY || env.AWS_ACCESS_KEY_ID;
             secretAccessKey = secretAccessKey || env.AWS_SECRET_ACCESS_KEY;
             bucket = bucket || env.AWS_BUCKET;
             prefix = prefix || env.AWS_BUCKET_PREFIX;
