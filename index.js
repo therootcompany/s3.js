@@ -4,17 +4,13 @@ var aws4 = require('aws4');
 var request = require('@root/request');
 var env = process.env;
 
-module.exports = {
+var S3;
+module.exports = S3 = {
     // HEAD
-    head: function({
-        host,
-        accessKeyId,
-        secretAccessKey,
-        region,
-        bucket,
-        prefix,
-        key
-    }) {
+    head: function (
+        { host, accessKeyId, secretAccessKey, region, bucket, prefix, key },
+        _sign
+    ) {
         // TODO support minio
         /*
         var awsHost = config.awsHost;
@@ -45,7 +41,7 @@ module.exports = {
         }
         var signed = aws4.sign(
             {
-                host: host || (bucket + '.s3.amazonaws.com'),
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -55,8 +51,11 @@ module.exports = {
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
         var url = 'https://' + signed.host + signed.path;
+        if ('sign' === _sign) {
+            return url;
+        }
 
-        return request({ method: 'HEAD', url }).then(function(resp) {
+        return request({ method: 'HEAD', url }).then(function (resp) {
             if (200 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -73,23 +72,26 @@ module.exports = {
     },
 
     // GET
-    get: function({
-        host,
-        accessKeyId,
-        secretAccessKey,
-        region,
-        bucket,
-        prefix,
-        key,
-        json
-    }) {
+    get: function (
+        {
+            host,
+            accessKeyId,
+            secretAccessKey,
+            region,
+            bucket,
+            prefix,
+            key,
+            json
+        },
+        _sign
+    ) {
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
         var signed = aws4.sign(
             {
-                host: host || (bucket + '.s3.amazonaws.com'),
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -99,6 +101,9 @@ module.exports = {
             { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey }
         );
         var url = 'https://' + signed.host + signed.path;
+        if ('sign' === _sign) {
+            return url;
+        }
 
         // stay binary by default
         var encoding = null;
@@ -110,7 +115,7 @@ module.exports = {
             url,
             encoding: encoding,
             json: json
-        }).then(function(resp) {
+        }).then(function (resp) {
             if (200 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -127,24 +132,27 @@ module.exports = {
     },
 
     // PUT
-    set: function({
-        host,
-        accessKeyId,
-        secretAccessKey,
-        region,
-        bucket,
-        prefix,
-        key,
-        body,
-        size
-    }) {
+    set: function (
+        {
+            host,
+            accessKeyId,
+            secretAccessKey,
+            region,
+            bucket,
+            prefix,
+            key,
+            body,
+            size
+        },
+        _sign
+    ) {
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
         var signed = aws4.sign(
             {
-                host: host || (bucket + '.s3.amazonaws.com'),
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -159,7 +167,7 @@ module.exports = {
             headers['Content-Length'] = size;
         }
 
-        return request({ method: 'PUT', url, body, headers }).then(function(
+        return request({ method: 'PUT', url, body, headers }).then(function (
             resp
         ) {
             if (200 === resp.statusCode) {
@@ -178,22 +186,17 @@ module.exports = {
     },
 
     // DELETE
-    del: function({
-        host,
-        accessKeyId,
-        secretAccessKey,
-        region,
-        bucket,
-        prefix,
-        key
-    }) {
+    del: function (
+        { host, accessKeyId, secretAccessKey, region, bucket, prefix, key },
+        _sign
+    ) {
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
         var signed = aws4.sign(
             {
-                host: host || (bucket + '.s3.amazonaws.com'),
+                host: host || bucket + '.s3.amazonaws.com',
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -204,7 +207,7 @@ module.exports = {
         );
         var url = 'https://' + signed.host + signed.path;
 
-        return request({ method: 'DELETE', url }).then(function(resp) {
+        return request({ method: 'DELETE', url }).then(function (resp) {
             if (204 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -218,5 +221,28 @@ module.exports = {
             err.response = resp;
             throw err;
         });
+    },
+
+    // sign-only
+    sign: function (opts) {
+        var method = opts.method;
+        if (!method) {
+            method = 'GET';
+        }
+        switch (method.toUpperCase()) {
+            case 'HEAD':
+                return S3.head(opts, 'sign');
+            case 'GET':
+                return S3.get(opts, 'sign');
+            case 'POST':
+            case 'PUT':
+            case 'SET':
+                return S3.set(opts, 'sign');
+            case 'DEL':
+            case 'DELETE':
+                return S3.del(opts, 'sign');
+            default:
+                throw new Error("Unknown method '" + method + "'");
+        }
     }
 };
