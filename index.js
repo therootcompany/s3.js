@@ -41,7 +41,7 @@ module.exports = S3 = {
         }
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || (bucket + '.s3.amazonaws.com'),
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -91,7 +91,7 @@ module.exports = S3 = {
         }
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || (bucket + '.s3.amazonaws.com'),
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -152,7 +152,7 @@ module.exports = S3 = {
         }
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || (bucket + '.s3.amazonaws.com'),
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -196,7 +196,7 @@ module.exports = S3 = {
         }
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || (bucket + '.s3.amazonaws.com'),
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
