@@ -34,10 +34,10 @@ s3.set({
     bucket,
     prefix,
     key,
-    body,               // new Buffer("hello, world")
+    body,               // Buffer.from("hello, world")
                         // or fs.createReadStream("./file.txt")
 
-    size                // fs.stat("./file.txt").size (required for streams)
+    size                // (await fs.stat("./file.txt")).size (required for streams)
 });
 ```
 
