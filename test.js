@@ -32,11 +32,11 @@ async function run() {
             body: stream,
             size
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: stream uploaded file');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('PUT Response:');
             if (err.response) {
@@ -62,11 +62,11 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: streamed file exists');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('HEAD Response:');
             if (err.response) {
                 console.error(err.response.statusCode);
@@ -87,7 +87,7 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             if (file.toString('binary') === resp.body.toString('binary')) {
                 console.info(
                     'PASS: streamed file downloaded with same contents'
@@ -96,7 +96,7 @@ async function run() {
             }
             throw new Error("file contents don't match");
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('GET Response:');
             if (err.response) {
@@ -118,11 +118,11 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: delete file');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('DELETE Response:');
             if (err.response) {
@@ -144,12 +144,12 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             var err = new Error('file should not exist');
             err.response = resp;
             throw err;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             if (err.response && 404 === err.response.statusCode) {
                 console.info('PASS: streamed file deleted');
                 return null;
@@ -176,11 +176,11 @@ async function run() {
             key,
             body: file
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: one-shot upload');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('PUT Response:');
             if (err.response) {
@@ -206,11 +206,11 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: one-shot upload exists');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('HEAD Response:');
             if (err.response) {
@@ -232,7 +232,7 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             if (file.toString('binary') === resp.body.toString('binary')) {
                 console.info(
                     'PASS: one-shot file downloaded with same contents'
@@ -241,7 +241,7 @@ async function run() {
             }
             throw new Error("file contents don't match");
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('GET Response:');
             if (err.response) {
@@ -263,11 +263,11 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.info('PASS: DELETE');
             return null;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             console.error('DELETE Response:');
             if (err.response) {
@@ -289,12 +289,12 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             var err = new Error('file should not exist');
             err.response = resp;
             throw err;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             if (err.response && 404 === err.response.statusCode) {
                 console.info('PASS: streamed file deleted');
                 return null;

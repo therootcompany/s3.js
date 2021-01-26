@@ -32,11 +32,11 @@ async function run() {
             prefix,
             key
         })
-        .then(function(resp) {
+        .then(function (resp) {
             console.log(resp.url);
             return fs.promises.writeFile(filepath, resp.body);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Error:');
             if (err.response) {
                 console.error(err.url);
