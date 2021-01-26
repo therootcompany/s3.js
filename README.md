@@ -13,8 +13,28 @@ A lightweight alternative to the S3 SDK that uses only @root/request and aws4.
 
 ### Download a file from S3
 
+This library supports the same streaming options as [@root/request.js](https://git.rootprojects.org/root/request.js).
+
+#### as a stream
+
 ```js
-s3.get({
+var resp = await s3.get({
+    accessKeyId,        // 'AKIAXXXXXXXXXXXXXXXX'
+    secretAccessKey,    // 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    region,             // 'us-east-2'
+    bucket,             // 'bucket-name'
+    prefix,             // 'my-prefix/' (optional)
+    key,                // 'data/stats.csv' (omits prefix, if any)
+    stream              // fs.createWriteStream('./path/to/file.bin')
+});
+
+await resp.stream;
+```
+
+#### in-memory
+
+```js
+var resp = await s3.get({
     accessKeyId,        // 'AKIAXXXXXXXXXXXXXXXX'
     secretAccessKey,    // 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     region,             // 'us-east-2'
@@ -22,12 +42,14 @@ s3.get({
     prefix,             // 'my-prefix/' (optional)
     key                 // 'data/stats.csv' (omits prefix, if any)
 });
+
+fs.writeFile(resp.body, './path/to/file.bin');
 ```
 
 ### Upload a new file to S3
 
 ```js
-s3.set({
+await s3.set({
     accessKeyId,
     secretAccessKey,
     region,
@@ -39,6 +61,36 @@ s3.set({
 
     size                // (await fs.stat("./file.txt")).size (required for streams)
 });
+```
+
+### Check that a file exists
+
+```js
+var resp = await s3.head({
+    accessKeyId,        // 'AKIAXXXXXXXXXXXXXXXX'
+    secretAccessKey,    // 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    region,             // 'us-east-2'
+    bucket,             // 'bucket-name'
+    prefix,             // 'my-prefix/' (optional)
+    key                 // 'data/stats.csv' (omits prefix, if any)
+});
+
+console.log(resp.headers);
+```
+
+### Delete file
+
+```js
+var resp = await s3.delete({
+    accessKeyId,        // 'AKIAXXXXXXXXXXXXXXXX'
+    secretAccessKey,    // 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    region,             // 'us-east-2'
+    bucket,             // 'bucket-name'
+    prefix,             // 'my-prefix/' (optional)
+    key                 // 'data/stats.csv' (omits prefix, if any)
+});
+
+console.log(resp.headers);
 ```
 
 ### Return signed URL without fetching.
@@ -53,7 +105,7 @@ s3.sign({
     prefix,
     key
 });
-```
+````
 
 ### A note on S3 terminology
 

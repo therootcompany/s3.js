@@ -23,32 +23,34 @@ if (!key || !filepath) {
 
 async function run() {
     // GET STREAMED FILE
-    await s3
-        .get({
-            accessKeyId,
-            secretAccessKey,
-            region,
-            bucket,
-            prefix,
-            key
-        })
-        .then(function (resp) {
-            console.log(resp.url);
-            return fs.promises.writeFile(filepath, resp.body);
-        })
-        .catch(function (err) {
-            console.error('Error:');
-            if (err.response) {
-                console.error(err.url);
-                console.error('GET Response:');
-                console.error(err.response.statusCode);
-                console.error(err.response.headers);
-                console.error(err.response.body.toString('utf8'));
-            } else {
-                console.error(err);
-            }
-            process.exit(1);
-        });
+    var resp = await s3.get({
+        accessKeyId,
+        secretAccessKey,
+        region,
+        bucket,
+        prefix,
+        key,
+        stream: filepath
+    });
+
+    console.log('Downloading', resp.url);
+    await resp.stream;
+
+    console.log('');
+    console.log('Saved as', filepath);
+    console.log('');
 }
 
-run();
+run().catch(function (err) {
+    console.error('Error:');
+    if (err.response) {
+        console.error(err.url);
+        console.error('GET Response:');
+        console.error(err.response.statusCode);
+        console.error(err.response.headers);
+        console.error(err.response.body.toString('utf8'));
+    } else {
+        console.error(err);
+    }
+    process.exit(1);
+});

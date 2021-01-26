@@ -5,10 +5,40 @@ var request = require('@root/request');
 var env = process.env;
 
 var S3;
+
+function toAwsBucketHost(host, bucket, region) {
+    if (host) {
+        return [host];
+    }
+
+    // Handle simply if it contains only valid subdomain characters
+    // (most notably that it does not have a '.' or '_')
+    if (/^[a-z0-9-]+$/i.test(bucket)) {
+        return ['', bucket + '.s3.amazonaws.com'];
+    }
+
+    // Otherwise use region-specific handling rules
+    // (TODO: handle other regional exceptions)
+    // http://www.wryway.com/blog/aws-s3-url-styles/
+    if (!region || 'us-east-1' === region) {
+        return ['s3.amazonaws.com'];
+    }
+    return ['s3-' + region + '.amazonaws.com'];
+}
+
 module.exports = S3 = {
     // HEAD
     head: function (
-        { host, accessKeyId, secretAccessKey, region, bucket, prefix, key },
+        {
+            host,
+            accessKeyId,
+            secretAccessKey,
+            region,
+            bucket,
+            prefix,
+            key,
+            ...requestOpts
+        },
         _sign
     ) {
         // TODO support minio
@@ -39,9 +69,10 @@ module.exports = S3 = {
             // whatever/ => whatever/
             prefix = prefix.replace(/\/?$/, '/');
         }
+        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || defaultHost,
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -55,7 +86,9 @@ module.exports = S3 = {
             return url;
         }
 
-        return request({ method: 'HEAD', url }).then(function (resp) {
+        return request(
+            Object.assign(requestOpts, { method: 'HEAD', url })
+        ).then(function (resp) {
             if (200 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -81,7 +114,8 @@ module.exports = S3 = {
             bucket,
             prefix,
             key,
-            json
+            json,
+            ...requestOpts
         },
         _sign
     ) {
@@ -89,9 +123,10 @@ module.exports = S3 = {
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || defaultHost,
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -110,12 +145,14 @@ module.exports = S3 = {
         if (json) {
             encoding = undefined;
         }
-        return request({
-            method: 'GET',
-            url,
-            encoding: encoding,
-            json: json
-        }).then(function (resp) {
+        return request(
+            Object.assign(requestOpts, {
+                method: 'GET',
+                url,
+                encoding: encoding,
+                json: json
+            })
+        ).then(function (resp) {
             if (200 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -142,7 +179,8 @@ module.exports = S3 = {
             prefix,
             key,
             body,
-            size
+            size,
+            ...requestOpts
         },
         _sign
     ) {
@@ -150,9 +188,10 @@ module.exports = S3 = {
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || defaultHost,
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -167,9 +206,9 @@ module.exports = S3 = {
             headers['Content-Length'] = size;
         }
 
-        return request({ method: 'PUT', url, body, headers }).then(function (
-            resp
-        ) {
+        return request(
+            Object.assign(requestOpts, { method: 'PUT', url, body, headers })
+        ).then(function (resp) {
             if (200 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -186,17 +225,27 @@ module.exports = S3 = {
     },
 
     // DELETE
-    del: function (
-        { host, accessKeyId, secretAccessKey, region, bucket, prefix, key },
+    delete: function (
+        {
+            host,
+            accessKeyId,
+            secretAccessKey,
+            region,
+            bucket,
+            prefix,
+            key,
+            ...requestOpts
+        },
         _sign
     ) {
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || bucket + '.s3.amazonaws.com',
+                host: host || defaultHost,
                 service: 's3',
                 region: region,
                 path: (host ? '/' + bucket : '') + '/' + prefix + key,
@@ -207,7 +256,9 @@ module.exports = S3 = {
         );
         var url = 'https://' + signed.host + signed.path;
 
-        return request({ method: 'DELETE', url }).then(function (resp) {
+        return request(
+            Object.assign(requestOpts, { method: 'DELETE', url })
+        ).then(function (resp) {
             if (204 === resp.statusCode) {
                 resp.url = url;
                 return resp;
@@ -246,3 +297,4 @@ module.exports = S3 = {
         }
     }
 };
+S3.del = S3.delete;
