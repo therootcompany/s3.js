@@ -2,7 +2,7 @@
     "name": "@root/s3",
     "version": "1.2.0",
     "description": "A simple, lightweight s3 client with only 2 dependencies",
-    "main": "index.js",
+    "main": "s3.js",
     "bin": {
         "s3-download": "bin/s3-download.js"
     },
@@ -28,7 +28,7 @@
     "author": "AJ ONeal <coolaj86@gmail.com> (https://coolaj86.com/)",
     "license": "(MIT OR Apache-2.0)",
     "dependencies": {
-        "@root/request": "^1.7.0",
+        "@root/request": "^1.8.0",
         "aws4": "^1.9.1"
     },
     "devDependencies": {
