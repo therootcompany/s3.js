@@ -1,6 +1,6 @@
 {
     "name": "@root/s3",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A simple, lightweight s3 client with only 2 dependencies",
     "main": "s3.js",
     "bin": {
