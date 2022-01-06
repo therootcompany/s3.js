@@ -87,13 +87,13 @@ module.exports = S3 = {
             prefix = prefix.replace(/\/?$/, '/');
         }
 
-        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
+        var [_host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || defaultHost,
+                host: _host || defaultHost,
                 service: 's3',
                 region: region,
-                path: (host ? '/' + bucket : '') + '/' + prefix + key,
+                path: (_host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'HEAD',
                 signQuery: true
             },
@@ -144,13 +144,13 @@ module.exports = S3 = {
             prefix = prefix.replace(/\/?$/, '/');
         }
 
-        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
+        var [_host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || defaultHost,
+                host: _host || defaultHost,
                 service: 's3',
                 region: region,
-                path: (host ? '/' + bucket : '') + '/' + prefix + key,
+                path: (_host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'GET',
                 signQuery: true
             },
@@ -212,13 +212,13 @@ module.exports = S3 = {
             prefix = prefix.replace(/\/?$/, '/');
         }
 
-        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
+        var [_host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || defaultHost,
+                host: _host || defaultHost,
                 service: 's3',
                 region: region,
-                path: (host ? '/' + bucket : '') + '/' + prefix + key,
+                path: (_host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'PUT',
                 signQuery: true
             },
@@ -269,13 +269,13 @@ module.exports = S3 = {
             prefix = prefix.replace(/\/?$/, '/');
         }
 
-        var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
+        var [_host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
-                host: host || defaultHost,
+                host: _host || defaultHost,
                 service: 's3',
                 region: region,
-                path: (host ? '/' + bucket : '') + '/' + prefix + key,
+                path: (_host ? '/' + bucket : '') + '/' + prefix + key,
                 method: 'DELETE',
                 signQuery: true
             },
