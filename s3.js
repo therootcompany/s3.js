@@ -112,7 +112,7 @@ module.exports = S3 = {
                 return resp;
             }
             var err = new Error(
-                'expected status 200 but got ' +
+                '[s3.js] expected status 200 but got ' +
                     resp.statusCode +
                     '. See err.response for more info.'
             );
@@ -179,7 +179,7 @@ module.exports = S3 = {
                 return resp;
             }
             var err = new Error(
-                'expected status 200 but got ' +
+                '[s3.js] expected status 200 but got ' +
                     resp.statusCode +
                     '. See err.response for more info.'
             );
@@ -238,7 +238,7 @@ module.exports = S3 = {
                 return resp;
             }
             var err = new Error(
-                'expected status 201 but got ' +
+                '[s3.js] expected status 201 but got ' +
                     resp.statusCode +
                     '. See err.response for more info.'
             );
@@ -291,7 +291,7 @@ module.exports = S3 = {
                 return resp;
             }
             var err = new Error(
-                'expected status 204 but got ' +
+                '[s3.js] expected status 204 but got ' +
                     resp.statusCode +
                     '. See err.response for more info.'
             );
@@ -320,7 +320,7 @@ module.exports = S3 = {
             case 'DELETE':
                 return S3.del(opts, 'sign');
             default:
-                throw new Error(`Unknown method '${method}'`);
+                throw new Error(`[s3.js] Unknown method '${method}'`);
         }
     }
 };
