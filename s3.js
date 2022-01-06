@@ -2,9 +2,23 @@
 
 var aws4 = require('aws4');
 var request = require('@root/request');
-var env = process.env;
 
 var S3;
+
+function assertCredentials(accessKeyId, secretAccessKey) {
+    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_AccessKey.html
+    // https://awsteele.com/blog/2020/09/26/aws-access-key-format.html
+    if ('A' !== String(accessKeyId)[0] || String(accessKeyId).length < 16) {
+        throw new Error(
+            `[s3.js] invalid or missing accessKeyId=AWS_ACCESS_KEY_ID: ${accessKeyId}`
+        );
+    }
+    if ('string' !== typeof secretAccessKey || secretAccessKey.length < 16) {
+        throw new Error(
+            `[s3.js] invalid or missing secretAccessKey=AWS_SECRET_ACCESS_KEY: ${secretAccessKey}`
+        );
+    }
+}
 
 function toAwsBucketHost(host, bucket, region) {
     if (host) {
@@ -41,6 +55,8 @@ module.exports = S3 = {
         },
         _sign
     ) {
+        assertCredentials(accessKeyId, secretAccessKey);
+
         // TODO support minio
         /*
         var awsHost = config.awsHost;
@@ -63,12 +79,14 @@ module.exports = S3 = {
             endpoint = endpoint || env.AWS_ENDPOINT;
         }
         */
+
         prefix = prefix || '';
         if (prefix) {
             // whatever => whatever/
             // whatever/ => whatever/
             prefix = prefix.replace(/\/?$/, '/');
         }
+
         var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
@@ -119,10 +137,13 @@ module.exports = S3 = {
         },
         _sign
     ) {
+        assertCredentials(accessKeyId, secretAccessKey);
+
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+
         var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
@@ -184,10 +205,13 @@ module.exports = S3 = {
         },
         _sign
     ) {
+        assertCredentials(accessKeyId, secretAccessKey);
+
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+
         var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
@@ -238,10 +262,13 @@ module.exports = S3 = {
         },
         _sign
     ) {
+        assertCredentials(accessKeyId, secretAccessKey);
+
         prefix = prefix || '';
         if (prefix) {
             prefix = prefix.replace(/\/?$/, '/');
         }
+
         var [host, defaultHost] = toAwsBucketHost(host, bucket, region);
         var signed = aws4.sign(
             {
@@ -293,7 +320,7 @@ module.exports = S3 = {
             case 'DELETE':
                 return S3.del(opts, 'sign');
             default:
-                throw new Error("Unknown method '" + method + "'");
+                throw new Error(`Unknown method '${method}'`);
         }
     }
 };
