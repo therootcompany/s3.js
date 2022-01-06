@@ -1,4 +1,5 @@
-{ "node": true
-, "browser": true
-, "esversion": 8
+{
+  "node": true,
+  "browser": false,
+  "esversion": 9
 }
